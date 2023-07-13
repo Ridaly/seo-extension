@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "PaaExtractor",
+  "name": "SEO PaaExtractor",
   "version": "1.0",
-  "description": "Description of your extension",
+  "description": "Extract People Also Asked from SERP into json file",
   "permissions": ["activeTab"],
   "background": {
     "scripts": ["background.js"],
