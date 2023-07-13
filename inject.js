@@ -1,4 +1,5 @@
 const qs = [];
+const qsExtractLimit = 5;
 
 const container = document.querySelector('div[jsname="N760b"]');
 
@@ -6,16 +7,33 @@ const container = document.querySelector('div[jsname="N760b"]');
 let paas;
 
 paas = Array.from(container.querySelectorAll('div[jsname="yEVEwb"]'));
-
 for (let i = 0; i < paas.length; i++) {
+  if (!paas[i]) {
+    // find last element
+    // click it
+    // wait a bit
+  }
   const qEl = paas[i].querySelector(".CSkcDe");
   const aEl = paas[i].querySelector(".wDYxhc");
-  const urlChildEl = paas[i].querySelector(".LC20lb");
-  const urlEl = urlChildEl.parentNode;
+  let url, urlEl;
+  try {
+    const urlChildEl = paas[i].querySelector(".LC20lb");
+    if (urlChildEl) {
+      urlEl = urlChildEl.parentNode;
+    } else {
+      const urlParent = paas[i].querySelector(".Xv4xee");
+      if (urlParent) {
+        urlEl = urlParent.querySelector("a");
+      }
+    }
+    url = urlEl.href;
+  } catch (e) {
+    console.log(e);
+  }
+
   const q = getText(qEl);
   const a = getText(aEl);
   const aHtml = aEl.innerHTML;
-  const url = urlEl.href;
 
   qs.push({
     q,
