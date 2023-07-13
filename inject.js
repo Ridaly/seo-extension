@@ -21,20 +21,22 @@ async function RunScript(limit) {
   function getPAAS() {
     return Array.from(container.querySelectorAll('div[jsname="yEVEwb"]'));
   }
+
+  let clicks = 0;
   for (let i = 0; i < limit; i++) {
     if (!paas[i]) {
       try {
-        // find last element
-        const lastEl = paas[i - 1];
-        // get btn & click it
-        const btn = lastEl.querySelector(".dnXCYb");
-        btn.click();
-        // wait a bit
-        await randomSleep();
-        paas = getPAAS();
-        if (!paas[i]) {
-          console.log("not found new elements");
-          break;
+        while (!paas[i]) {
+          if (i === clicks) throw new Error("No more PAAs");
+          // get next element to click
+          const nextQuestionToOpen = paas[clicks];
+          // get btn & click it
+          const btn = nextQuestionToOpen.querySelector(".dnXCYb");
+          btn.click();
+          clicks++;
+          // wait a bit
+          await randomSleep();
+          paas = getPAAS();
         }
       } catch (e) {
         console.log(e);
