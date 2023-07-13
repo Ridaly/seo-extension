@@ -1,6 +1,14 @@
 const qs = [];
 
-RunScript(10);
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (document.readyState === "complete") {
+    RunScript(request.number);
+  } else {
+    document.addEventListener("DOMContentLoaded", function () {
+      RunScript(request.number);
+    });
+  }
+});
 
 async function RunScript(limit) {
   const container = document.querySelector('div[jsname="N760b"]');
@@ -34,7 +42,7 @@ async function RunScript(limit) {
       }
     }
     const qEl = paas[i].querySelector(".CSkcDe");
-    const aEl = paas[i].querySelector(".wDYxhc");
+    const aEls = Array.from(paas[i].querySelectorAll(".wDYxhc"));
     let url, urlEl;
     try {
       const urlChildEl = paas[i].querySelector(".LC20lb");
@@ -51,9 +59,15 @@ async function RunScript(limit) {
       console.log(e);
     }
 
-    const q = getText(qEl);
-    const a = getText(aEl);
-    const aHtml = aEl.innerHTML;
+    const q = getText(qEl).trim();
+    const a = aEls
+      .map((el) => getText(el))
+      .join("\n")
+      .trim();
+    const aHtml = aEls
+      .map((el) => el.innerHTML)
+      .join("\n")
+      .trim();
 
     qs.push({
       q,
@@ -64,20 +78,12 @@ async function RunScript(limit) {
   }
 
   console.log(qs);
+  generateAndDownloadJSON(qs);
 }
 
 function getText(el) {
   return el.innerText || el.textContent;
 }
-
-// container -> div[jsname="N760b"]
-// paas -> div[jsname="yEVEwb"]
-// btns -> .dnXCYb
-// q -> .CSkcDe
-// active
-// a -> .wDYxhc
-// child url -> .LC20lb | LC20lb MBeuO DKV0Md
-// el.scrollIntoView(true)
 async function randomSleep(min = 600, max = 1300) {
   return await sleep(randomIntFromInterval(min, max));
 }
@@ -89,4 +95,30 @@ function sleep(ms) {
 function randomIntFromInterval(min, max) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function generateAndDownloadJSON(jsonData) {
+  // Convert the JSON data to a Blob
+  const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
+    type: "application/json",
+  });
+
+  // Create a temporary URL for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a link element
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "data.json";
+  link.style.display = "none";
+
+  // Append the link to the document
+  document.body.appendChild(link);
+
+  // Simulate a click event to trigger the download
+  link.click();
+
+  // Clean up the temporary URL and link element
+  URL.revokeObjectURL(url);
+  document.body.removeChild(link);
 }
