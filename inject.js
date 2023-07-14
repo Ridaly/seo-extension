@@ -1,16 +1,5 @@
-const qs = [];
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (document.readyState === "complete") {
-    RunScript(request.number);
-  } else {
-    document.addEventListener("DOMContentLoaded", function () {
-      RunScript(request.number);
-    });
-  }
-});
-
-async function RunScript(limit) {
+async function runPaaScript(limit) {
+  const qs = [];
   const container = document.querySelector('div[jsname="N760b"]');
 
   // LETS GET ALL THE ONES THAT SHOW AT START
